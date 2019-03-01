@@ -2,7 +2,7 @@
 
 <?php
 
-$test = shell_exec('~/.tmux/scripts/sp current-oneline');
+$test = shell_exec('~/scripts/sp current-oneline');
 
 if (strpos($test, 'Spotify is not running') === false) {
 	echo $test;
