@@ -1,59 +1,86 @@
-filetype off " required
-filetype plugin indent on " required
+source ~/.config/nvim/plugins.vim
 
-set title
+set number relativenumber " Show hybrid line numbers
+set tabstop=4 " Make tab appear 4 spaces
+set shiftwidth=4
+set signcolumn=yes
 
-set noerrorbells " No beeps
-set number relativenumber " Show line numbers
-set noswapfile " Don't use swapfile
-set nobackup " Don't create annoying backup files
-set nowritebackup
-set splitright " Split vertical windows right to the current windows
-set splitbelow " Split horizontal windows below to the current windows
-set encoding=utf-8 " Set default encoding to UTF-8
-set autoread " Automatically reread changed files without asking me anything
-
-set incsearch " Shows the match while typing
-set hlsearch  " Highlight found searches
-set ignorecase " Search case insensitive
-set smartcase " but not when search pattern contains upper case characters
-
-set ttyfast
-
-set lazyredraw " Wait to redraw
-
-" Make Vim to handle long lines nicely.
-set wrap
-set textwidth=79
-set formatoptions=qrn1
-
-syntax on "turn on syntax highlighting
-
-"set completeopt-=preview " Stops scratch window opening
-autocmd BufEnter * call ncm2#enable_for_buffer()
-set completeopt=noinsert,menuone,noselect
-
-set wildignore+=vendor/**
-
-" remove banner from netrw
+" netrw config
 let g:netrw_banner = 0
 let g:netrw_chgwin= -1
 let g:netrw_winsize = 20
 
-" tabs and indent
-set tabstop=4
-set shiftwidth=4
 
-" finding files
-set path+=**
-set wildmenu
+" THEME
+if (has("termguicolors"))
+ set termguicolors
+endif
+
+syntax enable
+colorscheme OceanicNext
+
+
+" PLUGIN CONFIG
+
+try
+" === Denite setup ==="
+" Use ripgrep for searching current directory for files
+" By default, ripgrep will respect rules in .gitignore
+"   --files: Print each file that would be searched (but don't search)
+"   --glob:  Include or exclues files for searching that match the given glob
+"            (aka ignore .git files)
+"
+call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
+
+" Use ripgrep in place of "grep"
+call denite#custom#var('grep', 'command', ['rg'])
+
+" Custom options for ripgrep
+"   --vimgrep:  Show results with every match on it's own line
+"   --hidden:   Search hidden directories and files
+"   --heading:  Show the file name above clusters of matches from each file
+"   --S:        Search case insensitively if the pattern is all lowercase
+call denite#custom#var('grep', 'default_opts', ['--hidden', '--vimgrep', '--heading', '-S'])
+
+" Recommended defaults for ripgrep via Denite docs
+call denite#custom#var('grep', 'recursive_opts', [])
+call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+call denite#custom#var('grep', 'separator', ['--'])
+call denite#custom#var('grep', 'final_opts', [])
+
+" Remove date from buffer list
+call denite#custom#var('buffer', 'date_format', '')
+
+" Custom options for Denite
+"   auto_resize             - Auto resize the Denite window height automatically.
+"   prompt                  - Customize denite prompt
+"   direction               - Specify Denite window direction as directly below current pane
+"   winminheight            - Specify min height for Denite window
+"   highlight_mode_insert   - Specify h1-CursorLine in insert mode
+"   prompt_highlight        - Specify color of prompt
+"   highlight_matched_char  - Matched characters highlight
+"   highlight_matched_range - matched range highlight
+let s:denite_options = {'default' : {
+\ 'auto_resize': 1,
+\ 'prompt': 'λ:',
+\ 'direction': 'rightbelow',
+\ 'winminheight': '10',
+\ 'highlight_mode_insert': 'Visual',
+\ 'highlight_mode_normal': 'Visual',
+\ 'prompt_highlight': 'Function',
+\ 'highlight_matched_char': 'Function',
+\ 'highlight_matched_range': 'Normal'
+\ }}
+
+catch
+  echo 'Denite not installed. It should work after running :PlugInstall'
+endtry
+
+" KEY MAPPINGS
 
 " map escape to something easier
 inoremap jk <Esc>
 inoremap kj <Esc>
-
-" set spelling completion
-set complete+=kspell
 
 " common caps errors
 :command WQ wq
@@ -61,102 +88,31 @@ set complete+=kspell
 :command W w
 :command Q q
 
-if empty(glob('~/.config/nvim/undo'))
-	silent !mkdir ~/.config/nvim/undo > /dev/null 2>&1
-endif
+" === Denite shorcuts === "
+"   ;         - Browser currently open buffers
+"   <leader>t - Browse list of files in current directory
+"   <leader>g - Search current directory for occurences of given term and
+"   close window if no results
+"   <leader>j - Search current directory for occurences of word under cursor
+nmap <leader>l :Denite buffer -split=floating -winrow=1<CR>
+nmap <leader>t :Denite file/rec -split=floating -winrow=1<CR>
+nnoremap <leader>g :<C-u>Denite grep:. -no-empty -mode=normal<CR>
+nnoremap <leader>j :<C-u>DeniteCursorWord grep:. -mode=normal<CR>
 
-set undofile                " Save undos after file closes
-set undodir=$HOME/.config/nvim/undo " where to save undo histories
-set undolevels=1000         " How many undos
-set undoreload=10000        " number of lines to save for undo
+" === coc.nvim === "
+nmap <silent> <leader>dd <Plug>(coc-definition)
+nmap <silent> <leader>dr <Plug>(coc-references)
+nmap <silent> <leader>dj <Plug>(coc-implementation)
 
-" remap ctrl + n & p to buffer navigation
-:nnoremap <C-n> :bnext<CR>
-:nnoremap <C-p> :bprevious<CR>
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-nnoremap <up>    <nop>
-nnoremap <down>  <nop>
-nnoremap <left>  <nop>
-nnoremap <right> <nop>
-
-" Mapping selecting mappings
-nmap <leader><tab> :Files<CR>
-
-nnoremap <silent><leader>vt :vert term<CR>
-nnoremap <silent><leader>pcf :call PhpCsFixerFixFile()<CR>
-
-" Highlight trailing spaces
-hi TrailingWhitespace ctermbg=red guibg=#f92672
-:autocmd BufWinEnter * 2match TrailingWhitespace /\s\+$/
-
-if empty(glob('~/.config/nvim/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-	  \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
-call plug#begin('~/.config/nvim/plugged')
-Plug 'w0rp/ale'
-Plug 'jiangmiao/auto-pairs'
-Plug 'vim-airline/vim-airline'
-Plug 'ap/vim-css-color'
-Plug 'mhinz/vim-signify'
-Plug 'stephpy/vim-php-cs-fixer'
-Plug 'junegunn/fzf.vim'
-Plug 'prettier/vim-prettier', { 'do': 'npm install' }
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'pangloss/vim-javascript'
-Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
-Plug 'ncm2/ncm2'
-Plug 'phpactor/ncm2-phpactor'
-Plug 'roxma/nvim-yarp'
-call plug#end()
-
-" themes
-"set termguicolors
-"set background=dark
-colorscheme monokai
-"colorscheme nord
-let g:molokai_original = 1
-
-" airline ale
-let g:airline#extensions#ale#enabled = 1
-
-let g:ale_linters = {
-\   'php': ['phpstan', 'phpmd', 'php'],
-\}
-let g:ale_lint_delay = 1000
-let g:ale_php_phpstan_level = 4
-let g:ale_php_phpmd_ruleset = 'unusedcode'
-
-let g:ale_sign_error = '⚑⚑'
-let g:ale_sign_warning = '⚐⚐'
-let g:ale_cursor_detail = 0
-
-" Enable the list of buffers
-let g:airline#extensions#tabline#enabled = 1
-
-" Show just the filename
-let g:airline#extensions#tabline#fnamemod = ':t'
-
-" PHP cs fixer
-let g:php_cs_fixer_path = "~/.config/composer/vendor/bin/php-cs-fixer"
-let g:php_cs_fixer_rules = "@Symfony"
-let g:php_cs_fixer_config_file = "~/.config/php_cs.dist"
-let g:php_cs_fixer_php_path = "php"
-
-if executable("rg")
-	set grepprg=rg\ --vimgrep\ --no-heading
-	set grepformat=%f:%l:%c:%m,%f:%l:%m
-	let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --glob "!.git/*" --glob "!.svn/*" --glob "!vendor/*" --glob "!node_modules/*"'
-endif
-
-" Prettier
-let g:prettier#autoformat = 0
-
-let g:gutentags_cache_dir = '~/.config/nvim/tags'
-
-autocmd BufReadPost *
-  \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-  \   exe "normal! g`\"" |
-  \ endif"`'")"'")
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
