@@ -6,13 +6,23 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
-" Denite - Fuzzy finding, buffer management
-Plug 'Shougo/denite.nvim'
-
-" Intellisense Engine
-Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
-
 " theme
 Plug 'mhartington/oceanic-next'
+
+" VCS gutter
+Plug 'mhinz/vim-signify'
+
+" Auto insert pairs
+Plug 'jiangmiao/auto-pairs'
+
+" php syntax
+Plug 'StanAngeloff/php.vim'
+
+" Linter
+Plug 'w0rp/ale'
+
+" Fuzzy finder
+Plug 'junegunn/fzf.vim'
+
 
 call plug#end()
