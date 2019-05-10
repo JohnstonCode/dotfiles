@@ -22,7 +22,13 @@ Plug 'StanAngeloff/php.vim'
 Plug 'w0rp/ale'
 
 " Fuzzy finder
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
+" Auto completion
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+
+" PHP
+Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
 
 call plug#end()
