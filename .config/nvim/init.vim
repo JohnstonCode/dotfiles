@@ -182,6 +182,13 @@ nmap <leader>tt :call phpactor#Transform()<CR>
 " Include use statement
 nmap <leader>u :call phpactor#UseAdd()<CR>
 
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+" Temp fix till neovim has floating windows show signature in cmd bar
+set cmdheight=2
+autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+
 
 " Php namespace
 let g:php_namespace_sort = "'{,'}-1!awk '{print length, $0}' | sort -n -s | cut -d' ' -f2-"
