@@ -32,6 +32,9 @@ Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
 " PHP
 Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
 
+" PHP use sorter
+Plug 'arnaud-lb/vim-php-namespace'
+
 call plug#end()
 
 " vim doesnt play well with other shells
@@ -178,3 +181,10 @@ nmap <leader>tt :call phpactor#Transform()<CR>
 
 " Include use statement
 nmap <leader>u :call phpactor#UseAdd()<CR>
+
+
+" Php namespace
+let g:php_namespace_sort = "'{,'}-1!awk '{print length, $0}' | sort -n -s | cut -d' ' -f2-"
+
+" Sort use statements
+nmap <leader>su :call PhpSortUse()<CR>
