@@ -1,76 +1,180 @@
-source ~/.config/nvim/plugins.vim
+if empty(glob('~/.config/nvim/autoload/plug.vim'))
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+	  \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
-set number relativenumber " Show hybrid line numbers
-set tabstop=4 " Make tab appear 4 spaces
+call plug#begin('~/.config/nvim/plugged')
+
+" theme
+Plug 'mhartington/oceanic-next'
+
+" VCS gutter
+Plug 'mhinz/vim-signify'
+
+" Auto insert pairs
+Plug 'jiangmiao/auto-pairs'
+
+" php syntax
+Plug 'StanAngeloff/php.vim'
+
+" Linter
+Plug 'w0rp/ale'
+
+" Fuzzy finder
+Plug 'airblade/vim-rooter'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+
+" Auto completion
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+
+" PHP
+Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
+
+call plug#end()
+
+" vim doesnt play well with other shells
+set shell=/bin/bash
+
+" Allow switching to other buffers without saving
+set hidden
+
+" Dont scatter swap files throughout the filesystem
+set directory=/tmp//
+
+" wait 100ms instead of 1sec for keycode sequences
+set ttimeoutlen=100
+
+" Show partially typed commands in the status bar
+set showcmd
+
+" Get some decent auto-indenting
+filetype plugin indent on
+
+" Delete comment character when joining commented lines
+set formatoptions+=j
+
+" User persistent undo. Opening a file that has previously been edited
+" restores its undo history
+set undofile
+set undodir=/tmp
+
+" Dont hide lines that are too long to display in the window - show as much as
+" possible
+set display=lastline
+
+" Make tab completion a bit more like bash
+set wildmenu
+set path+=**
+
+" Keep 3 lines of context above/below the cursor rather than putting the
+" cursor on the very top of the bottom line
+set scrolloff=3
+
+" Show hybrid line numbers
+set number relativenumber
+
+" Make tab appear 4 spaces
+set tabstop=4
 set shiftwidth=4
+set expandtab
+
+" Always show sign column so errors dont move page
 set signcolumn=yes
 
-" netrw config
-let g:netrw_banner = 0
-let g:netrw_chgwin= -1
-let g:netrw_winsize = 20
+" Make search better
+set ignorecase
+set smartcase
 
+" Make netrw look better
+let g:netrw_banner=0
+let g:netrw_chgwin=1
+let g:netrw_winsize=20
 
-" THEME
+" Theme
 if (has("termguicolors"))
- set termguicolors
+    set termguicolors
 endif
 
 syntax enable
 colorscheme OceanicNext
 
-" KEY MAPPINGS
 
-" map escape to something easier
+" Map escape to something easier
 inoremap jk <Esc>
 inoremap kj <Esc>
 
-" common caps errors
+" Common caps errors
 :command WQ wq
 :command Wq wq
 :command W w
 :command Q q
 
-" Include use statement
-nmap <Leader>pu :call phpactor#UseAdd()<CR>
-nmap <Leader>pt :call phpactor#Transform()<CR>
+" No arrow keys
+nnoremap <up> <nop>
+nnoremap <down> <nop>
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
 
-" PLUGIN CONF
+" Left and right can switch buffers
+nnoremap <left> :bp<CR>
+nnoremap <right> :bn<CR>
 
-" ALE
-let g:ale_linters = {
-\   'php': ['phpstan', 'phpmd', 'php'],
-\}
-
-let g:ale_lint_delay = 1000
-let g:ale_php_phpstan_level = 4
-let g:ale_php_phpmd_ruleset = 'unusedcode'
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+" Double leader to switch between last two buffers
+nnoremap <leader><leader> <c-^>
 
 
-" FZF
+
+" Plugin conf
+
+" Ale
+let g:ale_lint_delay=1000
+let g:ale_php_phpstan_level=7
+let g:ale_php_phpmd_ruleset='unusedcode'
+let g:al_echo_msg_format='[%linter%] %s [%severity%]'
+
+
+" Fzf
 if executable("rg")
-	set grepprg=rg\ --vimgrep\ --no-heading
-	set grepformat=%f:%l:%c:%m,%f:%l:%m
-	let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --glob "!.git/*" --glob "!.svn/*" --glob "!vendor/*" --glob "!node_modules/*"'
+    set grepprg=rg\ --vimgrep\ --no-heading
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+    let $FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!vendor/*" --glob "!node_modules/*"'
 endif
 
-nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>b :Buffer<CR>
 nnoremap <leader>f :Files<CR>
 nnoremap <leader>s :Rg<CR>
 
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+" Coc
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use tab to trigger completion ahead and navigate.
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ coc#refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1] =~# '\s'
 endfunction
 
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
+" Use <cr> to confirm completion
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Phpactor
+" Invoke the context menu
+nmap <leader>mm :call phpactor#ContextMenu()<CR>
+
+" Transform the class in the current file
+nmap <leader>tt :call phpactor#Transform()<CR>
+
+" Include use statement
+nmap <leader>u :call phpactor#UseAdd()<CR>
