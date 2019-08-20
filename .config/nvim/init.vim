@@ -147,10 +147,10 @@ inoremap jk <Esc>
 inoremap kj <Esc>
 
 " Common caps errors
-:command WQ wq
-:command Wq wq
-:command W w
-:command Q q
+:command! WQ wq
+:command! Wq wq
+:command! W w
+:command! Q q
 
 " No arrow keys
 nnoremap <up> <nop>
@@ -243,3 +243,9 @@ hi TrailingWhitespace ctermbg=red guibg=#f92672
 
 " Save a file as root (,W)
 noremap <leader>W :w !sudo tee % > /dev/null<CR>
+
+" Source vim configuration upon save
+augroup vimrc
+    autocmd! BufWritePost $MYVIMRC source % | echom "Reloaded " . $MYVIMRC | redraw
+    autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
+augroup END
