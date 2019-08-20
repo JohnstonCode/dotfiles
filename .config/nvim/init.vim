@@ -117,6 +117,11 @@ set signcolumn=yes
 set ignorecase
 set smartcase
 
+" Make delete behave like other editors
+set backspace=indent,eol,start
+
+set autoread
+
 " Make netrw look better
 let g:netrw_banner=0
 let g:netrw_chgwin=1
@@ -125,6 +130,11 @@ let g:netrw_winsize=20
 " Theme
 if (has("termguicolors"))
     set termguicolors
+endif
+
+" Allow color schemes to do bright colors without forcing bold.
+if &t_Co == 8 && $TERM !~# '^linux\|^Eterm'
+    set t_Co=16
 endif
 
 syntax enable
@@ -225,3 +235,7 @@ let g:php_namespace_sort = "'{,'}-1!awk '{print length, $0}' | sort -n -s | cut 
 
 " Sort use statements
 nmap <leader>su :call PhpSortUse()<CR>
+
+" Highlight trailing spaces
+hi TrailingWhitespace ctermbg=red guibg=#f92672
+:autocmd BufWinEnter * 2match TrailingWhitespace /\s\+$/
