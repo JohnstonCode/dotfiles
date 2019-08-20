@@ -129,6 +129,9 @@ nnoremap <right> :bn<CR>
 " Double leader to switch between last two buffers
 nnoremap <leader><leader> <c-^>
 
+" Set normal split defaults
+set splitright
+set splitbelow
 
 
 " Plugin conf
