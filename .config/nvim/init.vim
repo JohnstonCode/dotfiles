@@ -12,8 +12,9 @@ Plug 'tpope/vim-commentary'
 " theme
 Plug 'mhartington/oceanic-next'
 
-" VCS gutter
+" Git stuff
 Plug 'mhinz/vim-signify'
+Plug 'tpope/vim-fugitive'
 
 " Auto insert pairs
 Plug 'jiangmiao/auto-pairs'
