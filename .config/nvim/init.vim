@@ -239,3 +239,6 @@ nmap <leader>su :call PhpSortUse()<CR>
 " Highlight trailing spaces
 hi TrailingWhitespace ctermbg=red guibg=#f92672
 :autocmd BufWinEnter * 2match TrailingWhitespace /\s\+$/
+
+" Save a file as root (,W)
+noremap <leader>W :w !sudo tee % > /dev/null<CR>
