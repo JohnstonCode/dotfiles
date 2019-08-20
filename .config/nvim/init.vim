@@ -6,6 +6,9 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+" comment out lines
+Plug 'tpope/vim-commentary'
+
 " theme
 Plug 'mhartington/oceanic-next'
 
@@ -27,7 +30,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 " Auto completion
-Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 
 " PHP
 Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
@@ -36,6 +39,30 @@ Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
 Plug 'arnaud-lb/vim-php-namespace'
 
 call plug#end()
+
+function! GitBranch()
+  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+  let l:branchname = GitBranch()
+  return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+set statusline=                       " Custom status line
+set statusline+=%#PmenuSel#           " Show git branch if it exists
+set statusline+=%{StatuslineGit()}
+set statusline+=%#LineNr#
+set statusline+=\ %f                  " Show file name
+set statusline+=%m\                   " Show whether file has been modified
+set statusline+=%=                    " Right align the following
+set statusline+=%#CursorColumn#
+set statusline+=\ %y                  " Filetype
+set statusline+=\ %{&fileencoding?&fileencoding:&encoding} " File encoding
+set statusline+=\ [%{&fileformat}\]    " File format
+set statusline+=\ %p%%                " Percentage through file
+set statusline+=\ %l:%c               " Line number:Column number
+set statusline+=\ 
 
 " vim doesnt play well with other shells
 set shell=/bin/bash
