@@ -1,3 +1,0 @@
-#!/bin/bash
-
-alias config='/usr/bin/git --git-dir=/home/cjohnston/dotfiles/ --work-tree=/home/cjohnston'
