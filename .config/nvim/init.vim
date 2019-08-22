@@ -179,6 +179,7 @@ let g:ale_linters_explicit = 1
 let g:ale_fix_on_save = 1
 let g:ale_lint_delay=1000
 let g:ale_php_phpstan_level=7
+let g:ale_php_phpstan_executable='vendor/bin/phpstan'
 let g:al_echo_msg_format='[%linter%] %s [%severity%]'
 
 let g:ale_fixers = {
@@ -198,6 +199,8 @@ if executable("rg")
     set grepprg=rg\ --vimgrep\ --no-heading
     set grepformat=%f:%l:%c:%m,%f:%l:%m
     let $FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!vendor/*" --glob "!node_modules/*"'
+else
+    echom "rg is not installed!"
 endif
 
 nnoremap <leader>b :Buffer<CR>
