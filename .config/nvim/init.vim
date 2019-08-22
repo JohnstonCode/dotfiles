@@ -63,7 +63,7 @@ set statusline+=\ %{&fileencoding?&fileencoding:&encoding} " File encoding
 set statusline+=\ [%{&fileformat}\]    " File format
 set statusline+=\ %p%%                " Percentage through file
 set statusline+=\ %l:%c               " Line number:Column number
-set statusline+=\ 
+set statusline+=\                     " End
 
 " vim doesnt play well with other shells
 set shell=/bin/bash
@@ -175,10 +175,22 @@ set splitbelow
 " Plugin conf
 
 " Ale
+let g:ale_linters_explicit = 1
+let g:ale_fix_on_save = 1
 let g:ale_lint_delay=1000
 let g:ale_php_phpstan_level=7
-let g:ale_php_phpmd_ruleset='unusedcode'
 let g:al_echo_msg_format='[%linter%] %s [%severity%]'
+
+let g:ale_fixers = {
+\    '*': ['trim_whitespace'],
+\    'javascript': ['prettier'],
+\    'css': ['prettier'],
+\    'php': ['php_cs_fixer'],
+\}
+
+let g:ale_linters = {
+\    'php': ['phpstan'],
+\}
 
 
 " Fzf
