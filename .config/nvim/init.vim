@@ -39,6 +39,10 @@ Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
 " PHP use sorter
 Plug 'arnaud-lb/vim-php-namespace'
 
+" File Explorer
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
 call plug#end()
 
 function! GitBranch()
@@ -251,6 +255,9 @@ let g:php_namespace_sort = "'{,'}-1!awk '{print length, $0}' | sort -n -s | cut 
 
 " Sort use statements
 nmap <leader>su :call PhpSortUse()<CR>
+
+" nerdtree
+nmap <leader>x :NERDTreeToggle<CR>
 
 " Highlight trailing spaces
 hi TrailingWhitespace ctermbg=red guibg=#f92672
