@@ -6,98 +6,58 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
-" comment out lines
-Plug 'tpope/vim-commentary'
-
-" theme
-Plug 'mhartington/oceanic-next'
-
-" Git stuff
-Plug 'mhinz/vim-signify'
-Plug 'tpope/vim-fugitive'
-
-" Auto insert pairs
-Plug 'jiangmiao/auto-pairs'
-
 " php syntax
 Plug 'StanAngeloff/php.vim'
 
-" Linter
-Plug 'w0rp/ale'
+" Auto completion
+Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 
 " Fuzzy finder
 Plug 'airblade/vim-rooter'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
-" Auto completion
-Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+" Linter
+Plug 'w0rp/ale'
 
-" PHP
-Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
+" theme
+Plug 'mhartington/oceanic-next'
 
-" PHP use sorter
-Plug 'arnaud-lb/vim-php-namespace'
+" Git gutter
+Plug 'mhinz/vim-signify'
 
 " File Explorer
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
+" Statusbar
+Plug 'itchyny/lightline.vim'
+
 call plug#end()
 
-function! GitBranch()
-  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-endfunction
 
-function! StatuslineGit()
-  let l:branchname = GitBranch()
-  return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
-endfunction
-
-set statusline=                       " Custom status line
-set statusline+=%#PmenuSel#           " Show git branch if it exists
-set statusline+=%{StatuslineGit()}
-set statusline+=%#LineNr#
-set statusline+=\ %f                  " Show file name
-set statusline+=%m\                   " Show whether file has been modified
-set statusline+=%=                    " Right align the following
-set statusline+=%#CursorColumn#
-set statusline+=\ %y                  " Filetype
-set statusline+=\ %{&fileencoding?&fileencoding:&encoding} " File encoding
-set statusline+=\ [%{&fileformat}\]    " File format
-set statusline+=\ %p%%                " Percentage through file
-set statusline+=\ %l:%c               " Line number:Column number
-set statusline+=\                     " End
-
-" vim doesnt play well with other shells
-set shell=/bin/bash
-
-" Allow switching to other buffers without saving
-set hidden
-
-" Dont scatter swap files throughout the filesystem
-set directory=/tmp//
-
-" wait 100ms instead of 1sec for keycode sequences
-set ttimeoutlen=100
-
-" Show partially typed commands in the status bar
-set showcmd
-
-" Get some decent auto-indenting
+syntax on " Get syntax
+colorscheme OceanicNext
 filetype plugin indent on
+let mapleader = "\<Space>"
+set number relativenumber " Show line number and relative numbers
+set cmdheight=2 " Better display for messages
+set updatetime=300 " Bad experience for diagnostic messages wit the default 4000
+set encoding=utf-8
+set hidden
+set signcolumn=yes " Always draw sign column, stops jank
+set timeoutlen=300 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
+set lazyredraw
+set ttyfast
+set mouse=a
+set vb t_vb= "No more beeps
+set autoread
+set shortmess+=c " Don't pass messages to |ins-completion-menu|.
+set noswapfile
 
-" Delete comment character when joining commented lines
-set formatoptions+=j
-
-" User persistent undo. Opening a file that has previously been edited
-" restores its undo history
-set undofile
-set undodir=/tmp
-
-" Dont hide lines that are too long to display in the window - show as much as
-" possible
-set display=lastline
+" Splits where i would expect them
+set splitright
+set splitbelow
 
 " Make tab completion a bit more like bash
 set wildmenu
@@ -107,54 +67,44 @@ set path+=**
 " cursor on the very top of the bottom line
 set scrolloff=3
 
-" Show hybrid line numbers
-set number relativenumber
-
 " Make tab appear 4 spaces
 set tabstop=4
 set shiftwidth=4
 set expandtab
 
-" Always show sign column so errors dont move page
-set signcolumn=yes
-
-" Make search better
+" Proper search
+set incsearch
 set ignorecase
 set smartcase
-
-" Make delete behave like other editors
-set backspace=indent,eol,start
-
-set autoread
+set gdefault
 
 " Make netrw look better
 let g:netrw_banner=0
 let g:netrw_chgwin=1
 let g:netrw_winsize=20
 
-" Theme
 if (has("termguicolors"))
     set termguicolors
 endif
 
-" Allow color schemes to do bright colors without forcing bold.
-if &t_Co == 8 && $TERM !~# '^linux\|^Eterm'
-    set t_Co=16
+" deal with colors
+if !has('gui_running')
+  set t_Co=256
+endif
+if (match($TERM, "-256color") != -1) && (match($TERM, "screen-256color") == -1)
+  " screen does not (yet) support truecolor
+  set termguicolors
 endif
 
-syntax enable
-colorscheme OceanicNext
+" Double leader to switch between last two buffers
+nnoremap <leader><leader> <c-^>
 
+" Left and right can switch buffers
+nnoremap <left> :bp<CR>
+nnoremap <right> :bn<CR>
 
 " Map escape to something easier
-inoremap jk <Esc>
-inoremap kj <Esc>
-
-" Common caps errors
-:command! WQ wq
-:command! Wq wq
-:command! W w
-:command! Q q
+inoremap jj <Esc>
 
 " No arrow keys
 nnoremap <up> <nop>
@@ -164,39 +114,19 @@ inoremap <down> <nop>
 inoremap <left> <nop>
 inoremap <right> <nop>
 
-" Left and right can switch buffers
-nnoremap <left> :bp<CR>
-nnoremap <right> :bn<CR>
+" Highlight trailing spaces
+hi TrailingWhitespace ctermbg=red guibg=#f92672
+:autocmd BufWinEnter * 2match TrailingWhitespace /\s\+$/
 
-" Double leader to switch between last two buffers
-nnoremap <leader><leader> <c-^>
+" File Indentation Settings per File Type
+autocmd FileType html setlocal shiftwidth=4 tabstop=4
+autocmd FileType php setlocal shiftwidth=4 tabstop=4
+autocmd FileType vue setlocal shiftwidth=2 tabstop=2
+autocmd FileType js setlocal shiftwidth=2 tabstop=2
 
-" Set normal split defaults
-set splitright
-set splitbelow
-
-
-" Plugin conf
-
-" Ale
-let g:ale_linters_explicit = 1
-let g:ale_fix_on_save = 1
-let g:ale_lint_delay=1000
-let g:ale_php_phpstan_level=7
-let g:ale_php_phpstan_executable='vendor/bin/phpstan'
-let g:al_echo_msg_format='[%linter%] %s [%severity%]'
-
-let g:ale_fixers = {
-\    '*': ['trim_whitespace'],
-\    'javascript': ['prettier'],
-\    'css': ['prettier'],
-\    'php': ['php_cs_fixer'],
-\}
-
-let g:ale_linters = {
-\    'php': ['phpstan'],
-\}
-
+" Permanent undo
+set undodir=~/.vimdid
+set undofile
 
 " Fzf
 if executable("rg")
@@ -211,63 +141,64 @@ nnoremap <leader>b :Buffer<CR>
 nnoremap <leader>f :Files<CR>
 nnoremap <leader>s :Rg<CR>
 
-" Coc
+" COC
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
+" position. Coc only does snippet and additional edit on confirm.
+if has('patch8.1.1068')
+  " Use `complete_info` if your (Neo)Vim version supports it.
+  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+else
+  imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+endif
+
+" GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
-" Use tab to trigger completion ahead and navigate.
-inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-    \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1] =~# '\s'
-endfunction
-
-" Use <cr> to confirm completion
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" Phpactor
-" Invoke the context menu
-nmap <leader>mm :call phpactor#ContextMenu()<CR>
-
-" Transform the class in the current file
-nmap <leader>tt :call phpactor#Transform()<CR>
-
-" Include use statement
-nmap <leader>u :call phpactor#UseAdd()<CR>
-
-" Use K to show documentation in preview window
+" Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-" Temp fix till neovim has floating windows show signature in cmd bar
-set cmdheight=2
-autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
 
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
 
-" Php namespace
-let g:php_namespace_sort = "'{,'}-1!awk '{print length, $0}' | sort -n -s | cut -d' ' -f2-"
+" Ale
+let g:ale_fixers = {
+\    '*': ['trim_whitespace'],
+\}
 
-" Sort use statements
-nmap <leader>su :call PhpSortUse()<CR>
+let g:ale_php_phpcs_standard = '~/.config/nvim/phpcs-ruleset.xml'
 
-" nerdtree
+" NERDtree
+let NERDTreeShowHidden=1
+
 nmap <leader>x :NERDTreeToggle<CR>
 
-" Highlight trailing spaces
-hi TrailingWhitespace ctermbg=red guibg=#f92672
-:autocmd BufWinEnter * 2match TrailingWhitespace /\s\+$/
-
-" Save a file as root (,W)
-noremap <leader>W :w !sudo tee % > /dev/null<CR>
-
-" Source vim configuration upon save
-augroup vimrc
-    autocmd! BufWritePost $MYVIMRC source % | echom "Reloaded " . $MYVIMRC | redraw
-    autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
-augroup END
+" If more than one window and previous buffer was NERDTree, go back to it.
+"autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" && winnr('$') > 1 | b# | endif
