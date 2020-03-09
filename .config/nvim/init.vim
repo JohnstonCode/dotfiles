@@ -49,7 +49,6 @@ set signcolumn=yes " Always draw sign column, stops jank
 set timeoutlen=300 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
 set lazyredraw
 set ttyfast
-set mouse=a
 set vb t_vb= "No more beeps
 set autoread
 set shortmess+=c " Don't pass messages to |ins-completion-menu|.
