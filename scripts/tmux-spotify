@@ -1,9 +1,0 @@
-#!/usr/bin/php
-
-<?php
-
-$test = shell_exec('~/scripts/sp current-oneline');
-
-if (strpos($test, 'Spotify is not running') === false) {
-	echo $test;
-}
