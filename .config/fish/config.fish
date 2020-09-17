@@ -1,6 +1,6 @@
 alias vim='nvim'
 alias up='sudo dnf update --refresh'
-alias ls='exa'
+alias ls='exa -al --color=always --group-directories-first'
 alias dc='docker-compose'
 
 # This is needed to help save configs with git https://www.atlassian.com/git/tutorials/dotfiles
