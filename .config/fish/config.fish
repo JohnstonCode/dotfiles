@@ -1,7 +1,7 @@
 alias vim='nvim'
 alias up='sudo dnf update --refresh'
 alias ls='exa -al --color=always --group-directories-first'
-alias dc='docker-compose'
+alias dc='COMPOSE_DOCKER_CLI_BUILD=1 docker-compose'
 
 # This is needed to help save configs with git https://www.atlassian.com/git/tutorials/dotfiles
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
